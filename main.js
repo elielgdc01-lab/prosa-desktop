@@ -2,7 +2,7 @@
    Abre o Prosa publicado numa janela própria; o login com Google acontece no navegador
    e volta para cá pelo endereço prosa://auth (o Google não deixa logar dentro de apps assim).
    Extras do programa: jogo em andamento ("Jogando…"), sobreposição na tela do jogo e atualização automática. */
-const { app, BrowserWindow, session, shell, ipcMain, desktopCapturer, Menu, screen } = require('electron');
+const { app, BrowserWindow, session, shell, ipcMain, desktopCapturer, Menu, screen, nativeImage } = require('electron');
 const path = require('node:path');
 const { execFile } = require('node:child_process');
 const GAMES = require('./games.js');
@@ -59,6 +59,7 @@ function createWindow(){
   win.webContents.setWindowOpenHandler(({ url }) => { if (/^https?:/.test(url)) shell.openExternal(url); return { action: 'deny' }; });
   win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith(SITE)) { e.preventDefault(); if (/^https?:/.test(url)) shell.openExternal(url); } });
   win.webContents.on('page-title-updated', e => e.preventDefault());
+  win.on('focus', () => win.flashFrame(false));
   win.on('closed', () => { win = null; if (overlay && !overlay.isDestroyed()) overlay.destroy(); overlay = null; });
 }
 
@@ -137,6 +138,17 @@ function updateOverlay(){
   if (!overlay.isVisible() && !TEST) overlay.showInactive();
 }
 ipcMain.on('overlay-state', (_e, st) => { ovState = st; updateOverlay(); });
+
+/* ---------- bolinha na barra de tarefas e piscar ---------- */
+ipcMain.on('badge', (_e, b) => {
+  if (TEST) console.log('[teste] bolinha:', b?.count, b?.img ? 'com imagem' : 'sem imagem');
+  if (!win || win.isDestroyed()) return;
+  try {
+    if (!b || !b.count || typeof b.img !== 'string' || !b.img.startsWith('data:image/png')) win.setOverlayIcon(null, '');
+    else win.setOverlayIcon(nativeImage.createFromDataURL(b.img), `${b.count} ${b.count === 1 ? 'novidade' : 'novidades'} no Prosa`);
+  } catch {}
+});
+ipcMain.on('flash', () => { if (TEST) console.log('[teste] piscar pedido'); if (win && !win.isDestroyed() && !win.isFocused()) win.flashFrame(true); });
 
 /* ---------- atualização automática do programa ---------- */
 let updater = null;

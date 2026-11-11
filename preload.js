@@ -10,4 +10,6 @@ contextBridge.exposeInMainWorld('prosaDesktop', {
   overlay: st => ipcRenderer.send('overlay-state', st),
   onAppUpdate: cb => ipcRenderer.on('app-update', (_e, info) => cb(info)),
   installAppUpdate: () => ipcRenderer.send('app-update-install'),
+  badge: b => ipcRenderer.send('badge', b),
+  flash: () => ipcRenderer.send('flash'),
 });

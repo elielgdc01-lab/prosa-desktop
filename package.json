@@ -1,7 +1,7 @@
 {
   "name": "prosa-desktop",
   "productName": "Prosa",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Prosa para Windows: voz, câmera e tela compartilhada com quem você gosta.",
   "main": "main.js",
   "author": "Prosa",
