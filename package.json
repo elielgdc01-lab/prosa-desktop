@@ -1,0 +1,53 @@
+{
+  "name": "prosa-desktop",
+  "productName": "Prosa",
+  "version": "1.0.0",
+  "description": "Prosa para Windows: voz, câmera e tela compartilhada com quem você gosta.",
+  "main": "main.js",
+  "author": "Prosa",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis --publish never"
+  },
+  "build": {
+    "appId": "app.prosa.desktop",
+    "productName": "Prosa",
+    "artifactName": "Prosa-Setup.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json"
+    ],
+    "protocols": [
+      {
+        "name": "Prosa",
+        "schemes": [
+          "prosa"
+        ]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Prosa",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false
+    }
+  },
+  "devDependencies": {
+    "electron": "^39.8.10",
+    "electron-builder": "^26.18.0"
+  }
+}
